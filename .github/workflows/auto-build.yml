@@ -5,6 +5,7 @@ on:
       - master
       - develop
       - testing
+      - emby-4.9-fix
     paths:
     - '**/docker-mods/**'
   workflow_dispatch:
