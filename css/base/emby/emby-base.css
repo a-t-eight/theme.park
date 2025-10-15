@@ -23,6 +23,20 @@
     --line-background: var(--transparency-light-10);
     --line-size: .08em;
     --scrollbar-thumb-background: rgba(255,255,255,.3);
+    
+    /* Emby 4.9 HSL component variables (fallbacks keep old versions safe) */
+    --theme-primary-color-hue: var(--accent-h, 135);
+    --theme-primary-color-saturation: var(--accent-s, 94%);
+    --theme-primary-color-lightness: var(--accent-l, 65%);
+    
+    --background-hue: var(--bg-h, 232);
+    --background-saturation: var(--bg-s, 15%);
+    --background-lightness: var(--bg-l, 19%);
+    
+    --theme-text-color-hue: var(--text-h, 60);
+    --theme-text-color-saturation: var(--text-s, 9%);
+    --theme-text-color-lightness: var(--text-l, 95%);
+    --theme-text-color-alpha: var(--theme-text-color-alpha, .95);
 }
 
 @media (pointer: fine) {
