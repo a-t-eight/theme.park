@@ -29,3 +29,20 @@
   --gitea-color-primary-dark-4: 80, 250, 123;
   --overseerr-gradient: linear-gradient(180deg, rgba(40, 42, 54, 0.17) 0%, rgba(40, 42, 54) 100%);
   }
+/* Emby 4.9 bridge: HSL components used by theme.css */
+:root{
+  /* Dracula green (#50fa7b) */
+  --accent-h: 135;
+  --accent-s: 94%;
+  --accent-l: 65%;
+
+  /* Dracula background (#282a36) ≈ hsl(232,15%,19%) */
+  --bg-h: 232;
+  --bg-s: 15%;
+  --bg-l: 19%;
+
+  /* Dracula text (#f8f8f2) – near-white; tune if you prefer */
+  --text-h: 60;
+  --text-s: 9%;
+  --text-l: 95%;
+}
