@@ -337,7 +337,7 @@ html {
 }
 
 .cardText-secondary {
-    color: var(--text)
+    color: var(--theme-body-secondary-text-color)
 }
 
 .cardText-first {
