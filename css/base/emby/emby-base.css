@@ -5,7 +5,7 @@
     --theme-primary-color: var(--accent-color);
     --theme-text-color: var(--text);
     --theme-text-color-opaque: var(--text-hover);
-    --theme-accent-text-color: var(--accent-color);
+    --theme-accent-text-color: var(--link-color);
     --theme-primary-color-lightened: var(--accent-color-hover);
     --theme-icon-focus-background: rgba(var(--accent-color), 0.2);
 
