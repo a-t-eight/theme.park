@@ -5,7 +5,8 @@ on:
     branches:
       - master
       - develop
-      - testing 
+      - testing
+      - emby-4.9-fix
     paths-ignore:
         - 'docker-mods/**'
         - '.vscode/**'
@@ -88,6 +89,14 @@ jobs:
         with:
           publish_dir: ./
           publish_branch: live_testing
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          exclude_assets: ''
+      - name: Deploy emby-4.9-fix
+        uses: peaceiris/actions-gh-pages@v3.9.3
+        if: ${{ github.ref == 'refs/heads/emby-4.9-fix' || github.event.inputs.branch == 'emby-4.9-fix' }}
+        with:
+          publish_dir: ./
+          publish_branch: live_emby-4.9-fix
           github_token: ${{ secrets.GITHUB_TOKEN }}
           exclude_assets: ''
       - name: Clear CF Cache
