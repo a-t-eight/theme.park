@@ -20,6 +20,7 @@ on:
         - master
         - develop
         - testing
+        - emby-4.9-fix
 jobs:
   deploy:
     runs-on: ubuntu-latest
