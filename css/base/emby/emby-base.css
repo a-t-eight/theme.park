@@ -1,751 +1,277 @@
+/* theme.park — Emby base (4.9+ / Tailwind-friendly)
+   Goal: keep theme.park variable contract + provide Tailwind token bridge + modern component overrides.
+*/
+
+/* Keep theme.park defaults (placeholders + transparency scale) */
 @import url("/css/defaults/placeholders.css");
 @import url("/css/defaults/transparent.css");
 
+/* ------------------------------------------------------------
+   1) Canonical theme variables (theme.park contract)
+   ------------------------------------------------------------ */
+
 :root {
-    --theme-primary-color: var(--accent-color);
-    --theme-text-color: var(--text);
-    --theme-text-color-opaque: var(--text-hover);
-    --theme-accent-text-color: var(--accent-color);
-    --theme-primary-color-lightened: var(--accent-color-hover);
-    --theme-icon-focus-background: rgba(var(--accent-color), 0.2);
+  /* Emby “theme-*” variables used throughout older/legacy selectors */
+  --theme-primary-color: rgb(var(--accent-color));
+  --theme-primary-color-lightened: rgb(var(--accent-color-hover));
+  --theme-text-color: var(--text);
+  --theme-text-color-opaque: var(--text-hover);
+  --theme-accent-text-color: rgb(var(--accent-color));
+  --theme-background: var(--main-bg-color);
 
-    --theme-background: var(--main-bg-color);
-    --header-blur-background: rgba(20,20,20,0.66);
-    --drawer-background: #2C2C2E;
-    --docked-drawer-background: var(--transparency-dark-25);
-    --button-background: var(--button-color);
-    --card-background: var(--transparency-dark-15);
-    --footer-background: var(--modal-footer-color);
-    --footer-blur-background: rgba(29,29,31,0.66);
-    
-    --header-background: var(--theme-background);
-    --theme-body-secondary-text-color: rgba(255, 255, 255, .6);
-    --line-background: var(--transparency-light-10);
-    --line-size: .08em;
-    --scrollbar-thumb-background: rgba(255,255,255,.3);
+  /* A couple of layout/surface tokens we control */
+  --tp-radius-lg: 16px;
+  --tp-radius-md: 12px;
+  --tp-radius-sm: 10px;
+
+  --tp-surface-0: var(--theme-background);
+  --tp-surface-1: var(--transparency-dark-10);
+  --tp-surface-2: var(--transparency-dark-15);
+  --tp-surface-3: var(--transparency-dark-25);
+
+  --tp-border: var(--transparency-light-10);
+  --tp-border-strong: var(--transparency-light-20);
+
+  --tp-shadow: 0 10px 30px rgba(0,0,0,.35);
+
+  /* Header/footer blur backplates (kept similar to prior base intent) */
+  --tp-header-blur: rgba(20,20,20,.66);
+  --tp-footer-blur: rgba(29,29,31,.66);
+
+  /* ------------------------------------------------------------
+     2) Tailwind token bridge
+     Emby 4.9+ uses Tailwind. Many Tailwind-based UIs expose semantic vars
+     (shadcn-style: --background/--foreground/--card/etc). We define them
+     so Tailwind class-driven markup can still follow your theme variables.
+     ------------------------------------------------------------ */
+
+  --background: var(--tp-surface-0);
+  --foreground: var(--theme-text-color);
+  --muted: var(--tp-surface-1);
+  --muted-foreground: rgba(255,255,255,.65);
+
+  --card: var(--tp-surface-2);
+  --card-foreground: var(--foreground);
+
+  --popover: var(--modal-bg-color);
+  --popover-foreground: var(--foreground);
+
+  --border: var(--tp-border);
+  --input: var(--tp-surface-3);
+
+  --primary: rgb(var(--accent-color));
+  --primary-foreground: var(--button-text);
+
+  --ring: rgb(var(--accent-color));
+
+  /* Helps form controls render correctly in dark mode */
+  color-scheme: dark;
 }
 
-@media (pointer: fine) {
-    :not(.layout-tv):root {
-        --theme-background: var(--main-bg-color);
-        --header-blur-background: rgba(20,20,20,0.66);
-        --drawer-background: #2C2C2E;
-        --docked-drawer-background: var(--transparency-dark-25);
-        --button-background: #1f1f1f;
-        --card-background: var(--transparency-dark-15);
-        --footer-background: var(--modal-footer-color);
-        --footer-blur-background: rgba(29,29,31,0.66);
-    }
-}
-
+/* If Emby applies different layout roots (TV mode vs desktop), keep them coherent */
 .layout-tv:root {
-    --theme-background: var(--main-bg-color);
-    --header-blur-background: rgba(20,20,20,0.66);
-    --drawer-background: #2C2C2E;
-    --docked-drawer-background: var(--transparency-dark-25);
-    --button-background: #1f1f1f;
-    --card-background: var(--transparency-dark-15);
-    --footer-background: var(--modal-footer-color);
-    --footer-blur-background: rgba(29,29,31,0.66);
+  --tp-radius-lg: 18px;
+  --tp-radius-md: 14px;
+  --tp-radius-sm: 12px;
 }
 
-/*TP CUSTOM */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-.inputLabel,
-label {
-    color: var(--text-hover);
+/* ------------------------------------------------------------
+   3) Tailwind semantic class helpers (only if Emby uses these)
+   These are harmless if unused, and valuable if Emby uses semantic classes.
+   ------------------------------------------------------------ */
+
+.bg-background { background: var(--background) !important; }
+.text-foreground { color: var(--foreground) !important; }
+
+.bg-card { background: var(--card) !important; }
+.text-card-foreground { color: var(--card-foreground) !important; }
+
+.border-border { border-color: var(--border) !important; }
+
+.text-muted-foreground { color: var(--muted-foreground) !important; }
+.bg-muted { background: var(--muted) !important; }
+
+.bg-primary { background: var(--primary) !important; }
+.text-primary-foreground { color: var(--primary-foreground) !important; }
+
+/* Tailwind “ring” utilities use --tw-ring-color */
+.ring-ring { --tw-ring-color: var(--ring) !important; }
+
+/* ------------------------------------------------------------
+   4) Global base
+   ------------------------------------------------------------ */
+
+html, body {
+  background: var(--theme-background);
+  color: var(--theme-text-color);
 }
 
-a:not(.emby-button),
-.cardText.cardTextCentered.cardText-first>button {
-    color: var(--link-color) !important;
+/* Links (theme.park style) */
+a {
+  color: var(--link-color) !important;
+}
+a:hover {
+  color: var(--link-color-hover) !important;
 }
 
-a:hover:not(.emby-button),
-.cardText.cardTextCentered.cardText-first>button:hover {
-    color: var(--link-color-hover) !important;
-}
-
-/*TP END*/
-
+/* Subtle scrollbar */
 html {
-    color: var(--theme-text-color);
-    scrollbar-color: var(--scrollbar-thumb-background) transparent
+  scrollbar-color: rgba(255,255,255,.30) transparent;
 }
 
-.emby-collapsible-button {
-    border-color: var(--line-background) !important
-}
+/* ------------------------------------------------------------
+   5) Header / drawer / footer
+   ------------------------------------------------------------ */
 
-.skinHeader-withBackground.skinHeader-withfulldrawer {
-    border-bottom: .08em solid var(--line-background)
-}
-
+/* Legacy Emby selectors (still often present) */
 .skinHeader-withBackground {
-    background: var(--header-background);
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
+  background: var(--tp-header-blur) !important;
+  border-bottom: 1px solid var(--tp-border) !important;
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  backdrop-filter: saturate(1.6) blur(14px);
 }
 
 .appfooter,
 .formDialogFooter:not(.formDialogFooter-clear) {
-    background: var(--footer-background);
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
+  background: var(--tp-footer-blur) !important;
+  border-top: 1px solid var(--tp-border) !important;
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  backdrop-filter: saturate(1.6) blur(14px);
 }
 
-.formDialogHeader:not(.formDialogHeader-clear) {
-    background: var(--modal-header-color);
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
+/* Side drawer (keep simple + “Embymalism-ish” clean panels) */
+.navDrawer,
+.mainDrawer,
+.drawer,
+.drawer-content {
+  background: rgba(20,20,20,.72) !important;
+  -webkit-backdrop-filter: saturate(1.6) blur(18px);
+  backdrop-filter: saturate(1.6) blur(18px);
+  border-right: 1px solid var(--tp-border) !important;
 }
 
-.dialog {
-    background: var(--modal-bg-color);
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
-}
+/* ------------------------------------------------------------
+   6) Surfaces: cards, lists, dialogs, toasts
+   ------------------------------------------------------------ */
 
-@supports (backdrop-filter: blur(1em)) or (-webkit-backdrop-filter:blur(1em)) {
-    .skinHeader-withBackground {
-        background: var(--header-blur-background);
-        -webkit-backdrop-filter: saturate(1.8) blur(1.5em);
-        backdrop-filter: saturate(1.8) blur(1.5em)
-    }
-
-    .appfooter-withbackdropfilter {
-        background: var(--footer-blur-background);
-        -webkit-backdrop-filter: saturate(1.8) blur(1.5em);
-        backdrop-filter: saturate(1.8) blur(1.5em)
-    }
-}
-
-.skinHeader.semiTransparent {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    background-color: rgba(0, 0, 0, .3);
-    background: -webkit-gradient(linear, left top, left bottom, from(rgba(0, 0, 0, .6)), to(rgba(0, 0, 0, 0)));
-    background: -webkit-linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, 0));
-    background: -o-linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, 0));
-    background: linear-gradient(rgba(0, 0, 0, .6), rgba(0, 0, 0, 0));
-    -webkit-box-shadow: none !important;
-    box-shadow: none !important;
-    border-bottom: 0;
-    color: rgba(255, 255, 255, .87)
-}
-
-.pageTitleWithDefaultLogo {
-    background-image: url(/resources/emby/logowhite.png)
-}
-
-.backgroundContainer,
-html {
-    background: var(--theme-background);
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
-}
-
-.backgroundContainer.withBackdrop {
-    background: var(--transparency-dark-80)
-}
-
-@media not all and (min-width: 50em) {
-    .itemBackgroundContainer.withBackdrop {
-        background: var(--theme-background);
-        background-repeat: repeat, no-repeat;
-        background-attachment: fixed, fixed;
-        background-position: center center, center center;
-        background-size: auto, cover;
-        -webkit-background-size: auto, cover;
-        -moz-background-size: auto, cover;
-        -o-background-size: auto, cover;
-    }
-}
-
-.paper-icon-button-light-tv:focus,
-.paper-icon-button-light:active {
-    color: rgb(var(--theme-primary-color));
-    background-color: var(--theme-icon-focus-background)
-}
-
-@media(hover: hover) and (pointer:fine) {
-    .paper-icon-button-light:focus {
-        color: rgb(var(--theme-primary-color));
-        background-color: var(--theme-icon-focus-background)
-    }
-}
-
-.detailButton-icon,
-.fab,
-.raised:not(.raised-mini) {
-    background: var(--button-color);
-    color: var(--button-text);
-}
-
-.detailButton-icon {
-    border-color: rgba(255, 255, 255, .3)
-}
-
-.emby-select-withcolor {
-    color: inherit;
-    background: var(--transparency-dark-25);
-    border: var(--line-size) solid transparent
-}
-
-.toast {
-    background: var(--button-background);
-    color: var(--theme-text-color)
-}
-
-@supports (backdrop-filter: blur(1em)) or (-webkit-backdrop-filter:blur(1em)) {
-
-    .detailButton-icon,
-    .emby-select-withcolor.detailTrackSelect,
-    .fab,
-    .raised:not(.nobackdropfilter) {
-        background: rgba(85, 85, 85, .3);
-        -webkit-backdrop-filter: saturate(1.8) blur(1.5em);
-        backdrop-filter: saturate(1.8) blur(1.5em);
-        color: var(--transparency-light-95);
-    }
-
-    .dialog-blur,
-    .toast {
-        color: var(--text-hover);
-        background: rgba(56, 56, 56, .76);
-        -webkit-backdrop-filter: blur(2.5em) saturate(1.8);
-        backdrop-filter: blur(2.5em) saturate(1.8);
-        -webkit-box-shadow: none !important;
-        box-shadow: none !important
-    }
-
-    .toast-large {
-        color: rgba(255, 255, 255, .87)
-    }
-}
-
-.fab:focus,
-.raised:focus {
-    background: var(--button-color-hover);
-    color: var(--button-text-hover);
-}
-
-.button-submit:not(.emby-button-tv) {
-    background: var(--button-color);
-    color: var(--button-text)
-}
-
-.button-submit:not(.emby-button-tv):focus,
-.button-submit:not(.emby-button-tv):hover {
-    background: var(--button-color-hover);
-    color: var(--button-text-hover)
-}
-
-.emby-select-withcolor>option {
-    color: inherit;
-    background: var(--button-background)
-}
-
-.emby-select-withcolor:focus {
-    border-color: rgb(var(--theme-primary-color)) !important
-}
-
-.emby-select-tv-withcolor:focus {
-    background-color: rgb(var(--theme-primary-color)) !important;
-    color: var(--text-hover) !important
-}
-
-.checkboxLabel {
-    color: inherit
-}
-
-.emby-checkbox-focusring:focus:before {
-    background-color: var(--theme-icon-focus-background)
-}
-
-.inputLabelFocused,
-.selectLabelFocused,
-.textareaLabelFocused {
-    color: rgb(var(--accent-color))
-}
-
-.button-link {
-    color: var(--link-color)
-}
-
-.button-flat-accent {
-    color: rgb(var(--accent-color))
-}
-
+.card,
+.cardBox,
 .paperList,
-.visualCardBox {
-    background-color: var(--card-background)
+.listItem,
+.sectionTitleContainer {
+  background: var(--card) !important;
 }
 
-.collapseContent {
-    border: var(--line-size) solid var(--line-background)
+.card,
+.cardBox,
+.paperList,
+.dialog,
+.toast {
+  border-radius: var(--tp-radius-lg) !important;
 }
 
-.fieldDescription,
-.listItemBodyText-secondary,
-.secondaryText {
-    color: var(--theme-body-secondary-text-color)
+.card,
+.cardBox,
+.paperList,
+.dialog {
+  box-shadow: var(--tp-shadow);
+  border: 1px solid var(--tp-border) !important;
 }
 
-.cardText-secondary {
-    color: var(--text)
+/* Dialog shells */
+.dialog,
+.formDialogContent,
+.formDialogHeader:not(.formDialogHeader-clear) {
+  background: var(--modal-bg-color) !important;
 }
 
-.cardText-first {
-    color: var(--theme-text-color-opaque)
+/* Toasts */
+.toast {
+  background: rgba(30,30,30,.78) !important;
+  color: var(--theme-text-color-opaque) !important;
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  backdrop-filter: saturate(1.4) blur(18px);
+  border: 1px solid var(--tp-border) !important;
 }
 
-.actionsheetDivider {
-    background: var(--line-background)
+/* ------------------------------------------------------------
+   7) Controls: buttons, inputs, selects
+   ------------------------------------------------------------ */
+
+.emby-button,
+.button-submit:not(.emby-button-tv),
+.raised,
+.fab,
+.detailButton-icon {
+  background: var(--button-color) !important;
+  color: var(--button-text) !important;
+  border-radius: var(--tp-radius-md) !important;
+  border: 1px solid transparent !important;
 }
 
-@media(hover: hover) and (pointer:fine) {
-    .actionSheetMenuItem:hover {
-        background: var(--transparency-light-20)
-    }
+.emby-button:hover,
+.button-submit:not(.emby-button-tv):hover,
+.raised:hover,
+.fab:hover {
+  background: var(--button-color-hover) !important;
+  color: var(--button-text-hover) !important;
 }
 
-.selectionCommandsPanel {
-    background: rgb(var(--theme-primary-color));
-    color: var(--label-text-color);
-}
-
-.itemSelectionCount {
-    color: var(--label-text-color) !important;
-
-}
-
-.upNextDialog-countdownText {
-    color: rgb(var(--theme-primary-color))
-}
-
-.alphaPickerButton {
-    color: var(--theme-body-secondary-text-color);
-    background-color: transparent
-}
-
-.alphaPickerButton-selected {
-    color: var(--theme-text-color-opaque)
-}
-
-.alphaPickerButton-tv:focus {
-    background-color: rgb(var(--theme-primary-color));
-    color: var(--text-hover) !important
-}
-
-.detailTableBodyRow-shaded:nth-child(even) {
-    background: #1c1c1c;
-    background: rgba(30, 30, 30, .9)
-}
-
-.listItem-border {
-    border-color: var(--line-background) !important
-}
-
-.listItem-focusscale:focus {
-    background: rgba(54, 54, 54, .8)
-}
-
-.progressring-spiner {
-    border-color: rgb(var(--theme-primary-color))
-}
-
-.mediaInfoText {
-    background: var(--button-background)
-}
-
-.starIcon {
-    color: #cb272a
-}
-
-.mediaInfoTimerIcon {
-    color: #cb272a
-}
-
+/* Inputs/selects (covers both older and Tailwind-ish component shells) */
+input,
+textarea,
+select,
 .emby-input,
-.emby-textarea {
-    color: inherit;
-    background: var(--transparency-dark-25);
-    border: var(--line-size) solid rgba(255, 255, 255, 0.1)
+.emby-textarea,
+.emby-select-withcolor {
+  background: var(--input) !important;
+  color: var(--theme-text-color-opaque) !important;
+  border: 1px solid var(--tp-border) !important;
+  border-radius: var(--tp-radius-sm) !important;
 }
 
+input:focus,
+textarea:focus,
+select:focus,
 .emby-input:focus,
 .emby-textarea:focus {
-    border-color: rgb(var(--theme-primary-color))
+  outline: none !important;
+  border-color: rgb(var(--accent-color)) !important;
+  box-shadow: 0 0 0 3px rgba(var(--accent-color), .20) !important;
 }
 
-.emby-checkbox:checked+span:before {
-    border-color: currentColor
-}
-
-.emby-checkbox:checked+span:before {
-    border-color: rgb(var(--theme-primary-color)) !important;
-    background-color: rgb(var(--theme-primary-color)) !important;
-
-}
-
-.checkboxLabel::after {
-    color: var(--label-text-color);
-}
-
-.itemProgressBarForeground {
-    background-color: rgb(var(--theme-primary-color))
-}
-
-.itemProgressBarForeground-recording {
-    background-color: #cb272a
-}
-
-.countIndicator {
-    background: rgb(var(--theme-primary-color));
-    color: var(--label-text-color);
-}
-
-.playedIndicator {
-    background: rgb(var(--theme-primary-color))
-}
-
-.mainDrawer {
-    background: var(--drawer-background)
-}
-
-.drawer-docked {
-    background: var(--docked-drawer-background);
-    border-right: var(--line-size) solid var(--line-background)
-}
-
-@media(hover: hover) and (pointer:fine) {
-    .navMenuOption:hover {
-        background: #303030
-    }
-}
-
-.navMenuOption-selected {
-    background-color: var(--theme-icon-focus-background) !important;
-    color: rgb(var(--accent-color))
-}
-
-.emby-button-focusscale:focus,
-.emby-button-focusscale:focus .detailButton-icon {
-    background: rgb(var(--theme-primary-color));
-    color: var(--text-hover)
-}
-
-.emby-tab-button {
-    color: var(--theme-body-secondary-text-color)
-}
-
-.emby-tab-button-active {
-    color: rgb(var(--accent-color))
-}
-
-.emby-tab-button-active.emby-button-tv {
-    color: var(--theme-text-color-opaque)
-}
-
-.emby-tab-button.emby-button-tv:focus {
-    color: rgb(var(--accent-color));
-    background: 0 0
-}
-
-.emby-button {
-    outline-color: rgb(var(--theme-primary-color))
-}
-
-.channelCell,
-.guide-headerTimeslots,
-.timeslotHeaders {
-    background: var(--theme-background);
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
-}
-
-@media (pointer: coarse) {
-    .channelCell-mobilefocus {
-        background: var(--theme-background) !important;
-        background-repeat: repeat, no-repeat;
-        background-attachment: fixed, fixed;
-        background-position: center center, center center;
-        background-size: auto, cover;
-        -webkit-background-size: auto, cover;
-        -moz-background-size: auto, cover;
-        -o-background-size: auto, cover;
-    }
-}
-
-.channelCell-mobilefocus:not(:focus-visible) {
-    background: var(--theme-background) !important;
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
-}
-
-.channelCell-mobilefocus:not(:-moz-focusring) {
-    background: var(--theme-background) !important;
-    background-repeat: repeat, no-repeat;
-    background-attachment: fixed, fixed;
-    background-position: center center, center center;
-    background-size: auto, cover;
-    -webkit-background-size: auto, cover;
-    -moz-background-size: auto, cover;
-    -o-background-size: auto, cover;
-}
-
-.channelCell,
-.epgRow,
-.programCell {
-    border-color: rgba(255, 255, 255, .05)
-}
-
-.guide-currentTimeIndicatorDot {
-    border-right-color: var(--theme-icon-focus-background)
-}
-
-.guide-currentTimeIndicatorDot:after {
-    border-top-color: rgb(var(--theme-primary-color))
-}
-
-.firstChannelCell {
-    border-color: transparent
-}
-
-.programCell-sports {
-    background: #3949ab !important
-}
-
-.programCell-movie {
-    background: #5e35b1 !important
-}
-
-.programCell-kids {
-    background: #039be5 !important
-}
-
-.programCell-news {
-    background: #43a047 !important
-}
-
-.channelCell:focus,
-.programCell:focus {
-    background-color: rgb(var(--theme-primary-color));
-    color: var(--text-hover)
-}
-
-.guide-programTextIcon {
-    color: #1e1e1e;
-    background: #555
-}
-
-.infoBanner {
-    background: var(--card-background);
-    padding: 1em;
-    -webkit-border-radius: .3em;
-    border-radius: .3em
-}
-
-.ratingbutton-icon-withrating {
-    color: #c33 !important
-}
-
-.downloadbutton-icon-on {
-    color: #4285f4
-}
-
-.downloadbutton-icon-complete {
-    color: #4285f4
-}
-
-.playstatebutton-icon-played {
-    color: #c33 !important
-}
-
-.repeatButton-active {
-    color: #4285f4
-}
-
-.card:focus .card-focuscontent {
-    border-color: rgb(var(--theme-primary-color))
-}
-
-.cardContent-button {
-    background-color: transparent
-}
-
-.cardContent-shadow {
-    background-color: var(--card-background)
-}
-
-.defaultCardBackground0 {
-    background-color: var(--card-background)
-}
-
-.defaultCardBackground1 {
-    background-color: #d2b019
-}
-
-.defaultCardBackground2 {
-    background-color: #338abb
-}
-
-.defaultCardBackground3 {
-    background-color: #6b689d
-}
-
-.defaultCardBackground4 {
-    background-color: #dd452b
-}
-
-.defaultCardBackground5 {
-    background-color: #5ccea9
-}
-
-.cardOverlayButtonIcon {
-    background-color: rgb(var(--theme-primary-color))
-}
-
-.cardScalable.cardPadder-portrait>div>button>i {
-    color: var(--label-text-color) !important;
-}
-
-::-webkit-scrollbar-track-piece {
-    background-color: transparent
-}
+/* ------------------------------------------------------------
+   8) Media item polish (minimal / “Embymalism-ish”)
+   ------------------------------------------------------------ */
 
-::-webkit-scrollbar-thumb {
-    background: var(--scrollbar-thumb-background)
+.cardImageContainer,
+.primaryImageWrapper,
+.itemPoster,
+.itemImage {
+  border-radius: var(--tp-radius-md) !important;
 }
 
-.emby-slider-background {
-    background: var(--scrollbar-thumb-background)
+/* Progress bars / watched accents */
+.itemProgressBar,
+.playbackProgress,
+.progressbar,
+.mdl-slider__background-flex {
+  background: rgba(255,255,255,.12) !important;
 }
 
-.emby-slider {
-    color: rgb(var(--theme-primary-color))
+.itemProgressBar > div,
+.playbackProgress > div,
+.progressbar > div {
+  background: rgb(var(--accent-color)) !important;
 }
 
-.emby-slider::-moz-range-track {
-    background: #444
-}
-
-.emby-slider::-moz-range-progress {
-    background: rgb(var(--theme-primary-color))
-}
-
-.emby-slider::-webkit-slider-thumb {
-    background: rgb(var(--theme-primary-color))
-}
-
-.emby-slider::-moz-range-thumb {
-    background: rgb(var(--theme-primary-color))
-}
-
-.emby-slider::-ms-thumb {
-    background: rgb(var(--theme-primary-color))
-}
-
-.emby-slider-background-lower {
-    background-color: rgb(var(--theme-primary-color))
-}
-
-.scrollbuttoncontainer {
-    color: var(--text-hover);
-    background: rgba(20, 20, 20, .5)
-}
-
-.recordingIcon-active {
-    color: #c33 !important
-}
-
-.drawerLogo {
-    background-image: url(/resources/emby/logowhite.png);
-    border-bottom-color: var(--line-background)
-}
-
-.searchTabsContainer {
-    border-bottom: var(--line-size) solid var(--line-background)
-}
-
-.emby-search-tab-button.emby-tab-button-active {
-    background: rgb(var(--accent-color)) !important
-}
-
-.textActionButton.dragging {
-    background: var(--button-background) !important
-}
-
-.dragging-over.full-drop-target {
-    background: rgb(var(--theme-primary-color)) !important;
-    color: var(--text-hover) !important
-}
-
-.dragging-over-top:before {
-    background: rgb(var(--accent-color))
-}
-
-.dragging-over-bottom:after {
-    background: rgb(var(--accent-color))
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .navMenuOption:hover:not(.navMenuOption-selected) {
-        background: 0 !important;
-        color: var(--accent-color-hover);
-    }
-}
-
-.mainDrawer {
-    background: var(--header-blur-background);
-    -webkit-backdrop-filter: saturate(1.8) blur(1.5em);
-    backdrop-filter: saturate(1.8) blur(1.5em);
-}
+/* ------------------------------------------------------------
+   9) Safety: reduce overly-bright defaults in admin/config pages
+   ------------------------------------------------------------ */
 
-.jstree-default .jstree-clicked {
-    background: rgb(var(--accent-color));
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    color: var(--label-text-color) !important;
+.dashboardPage,
+.adminPage,
+.contentPage {
+  background: var(--theme-background) !important;
+  color: var(--theme-text-color) !important;
 }
